@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Master Pengguna</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--teal:#0097a7;--teal-dark:#00838f;--teal-light:#e0f7fa;--bg:#f0f4f8;--white:#ffffff;--border:#e2e8f0;--text-main:#1e293b;--text-muted:#6b7280;--text-label:#374151;--shadow:0 1px 4px rgba(0,0,0,0.08);--radius:7px;--danger:#dc2626;--success:#16a34a;--warn:#d97706}
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text-main);min-height:100vh;padding:0 0 60px}
+  .topnav{background:var(--white);border-bottom:1px solid var(--border);padding:0 32px;height:56px;display:flex;align-items:center;gap:8px;box-shadow:var(--shadow);position:sticky;top:0;z-index:100}
+  .topnav .brand{color:var(--teal);font-weight:700;font-size:16px}
+  .topnav .sep{color:#cbd5e1;font-size:18px;margin:0 2px}
+  .topnav .page-title{color:var(--text-main);font-weight:600;font-size:15px}
+  .breadcrumb{padding:16px 32px 0;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted)}
+  .breadcrumb a{color:var(--teal);text-decoration:none}
+  .main{padding:20px 32px;max-width:1100px}
+  .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-bottom:20px}
+  .card-header{background:var(--white);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:8px}
+  .card-header-icon{width:28px;height:28px;background:var(--teal-light);border-radius:6px;display:flex;align-items:center;justify-content:center}
+  .card-header-icon svg{width:16px;height:16px;stroke:var(--teal);fill:none;stroke-width:2}
+  .card-header-title{font-weight:600;font-size:14px;color:var(--teal);flex:1}
+  .card-header-right{display:flex;align-items:center;gap:8px}
+  .card-body{padding:24px 20px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 28px}
+  .form-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+  .form-group{display:flex;flex-direction:column;gap:5px}
+  .form-group.full{grid-column:1/-1}
+  label{font-size:13px;font-weight:500;color:var(--text-label);display:flex;align-items:center;gap:4px}
+  label .req{color:var(--danger);font-size:12px}
+  .field-hint{font-size:11px;color:var(--text-muted);line-height:1.4;margin-top:2px}
+  input[type="text"],input[type="email"],input[type="password"],select{width:100%;height:38px;padding:0 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;color:var(--text-main);background:var(--white);outline:none;transition:border-color .15s,box-shadow .15s}
+  input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,151,167,.12)}
+  select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
+  .section-divider{display:flex;align-items:center;gap:12px;margin:8px 0 20px}
+  .section-divider .sdlabel{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);white-space:nowrap}
+  .section-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+  .form-footer{display:flex;justify-content:flex-end;gap:10px;padding:16px 20px;background:#f8fafc;border-top:1px solid var(--border)}
+  .btn{height:38px;padding:0 20px;border-radius:var(--radius);font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;border:1px solid;transition:all .15s}
+  .btn svg{width:16px;height:16px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2}
+  .btn-outline{background:var(--white);border-color:var(--border);color:var(--text-main)}
+  .btn-outline:hover{background:var(--bg)}
+  .btn-save{background:#f0fdf4;border-color:#86efac;color:var(--success)}
+  .btn-save:hover{background:#dcfce7}
+  .btn-sm{height:28px;padding:0 10px;border-radius:5px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;border:1px solid;transition:all .15s}
+  .btn-sm svg{width:12px;height:12px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2}
+  .btn-edit{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+  .btn-edit:hover{background:#dbeafe}
+  .btn-del{background:#fef2f2;border-color:#fecaca;color:var(--danger)}
+  .btn-del:hover{background:#fee2e2}
+  .search-bar{display:flex;gap:10px;margin-bottom:16px}
+  .search-input{height:36px;flex:1;max-width:300px;border:1px solid var(--border);border-radius:var(--radius);padding:0 10px 0 32px;font-size:13px;outline:none;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;transition:border-color .15s}
+  .search-input:focus{border-color:var(--teal)}
+  .tbl-counter{font-size:12px;background:var(--teal-light);color:var(--teal);padding:2px 10px;border-radius:20px;font-weight:600}
+  .tbl-wrap{overflow-x:auto}
+  table.data-tbl{width:100%;border-collapse:collapse;font-size:12.5px;min-width:700px}
+  table.data-tbl thead th{background:#f8fafc;padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--border);white-space:nowrap}
+  table.data-tbl tbody tr{border-bottom:1px solid #f1f5f9;transition:background .12s}
+  table.data-tbl tbody tr:last-child{border-bottom:none}
+  table.data-tbl tbody tr:hover{background:#f8fafc}
+  table.data-tbl td{padding:10px 12px;vertical-align:middle}
+  .tbl-empty{display:flex;align-items:center;justify-content:center;gap:10px;padding:32px;color:var(--text-muted);font-size:13px}
+  .tbl-empty svg{width:28px;height:28px;stroke:var(--text-muted);fill:none;stroke-width:1.5;opacity:.5}
+  .row-no{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#f1f5f9;border-radius:4px;font-size:11px;font-weight:600;color:var(--text-muted)}
+  .editing-row{background:#fef9c3!important}
+  .avatar{width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;background:var(--teal)}
+  .badge-aktif{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;background:#dcfce7;color:#15803d}
+  .badge-nonaktif{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;background:#fee2e2;color:#dc2626}
+  .role-chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;background:#eff6ff;color:#1d4ed8}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(24px);background:#1e293b;color:#fff;padding:10px 22px;border-radius:8px;font-size:13.5px;font-weight:500;opacity:0;pointer-events:none;transition:all .22s;z-index:9999}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.success{background:#15803d}
+</style>
+</head>
+<body>
+<div class="breadcrumb">
+  <a href="index.html">Dashboard</a>
+  <span>›</span><span>Administrasi</span>
+  <span>›</span><span>Master Pengguna</span>
+</div>
+
+<div class="main">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <span class="card-header-title">Tambah / Edit Pengguna</span>
+    </div>
+    <form id="mainForm" onsubmit="handleSimpan(event)" novalidate>
+      <div class="card-body">
+        <div class="section-divider"><span class="sdlabel">Identitas Pengguna</span></div>
+        <div class="form-grid cols-3">
+          <div class="form-group">
+            <label for="namaLengkap">Nama Lengkap <span class="req">*</span></label>
+            <input type="text" id="namaLengkap" placeholder="cth: Ilham Dodo" required>
+          </div>
+          <div class="form-group">
+            <label for="username">Username <span class="req">*</span></label>
+            <input type="text" id="username" placeholder="cth: ilham.dodo" required>
+            <span class="field-hint">Digunakan untuk login ke sistem</span>
+          </div>
+          <div class="form-group">
+            <label for="emailUser">Email <span class="req">*</span></label>
+            <input type="email" id="emailUser" placeholder="user@bank.co.id" required>
+          </div>
+          <div class="form-group">
+            <label for="roleUser">Role / Jabatan <span class="req">*</span></label>
+            <select id="roleUser" required>
+              <option value="">— Pilih Role —</option>
+              <option value="SUPERADMIN">Super Admin</option>
+              <option value="ADMIN">Admin Pelaporan</option>
+              <option value="MAKER">Maker</option>
+              <option value="CHECKER">Checker</option>
+              <option value="APPROVER">Approver</option>
+              <option value="VIEWER">Viewer</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="cabangUser">Cabang / Unit Kerja <span class="req">*</span></label>
+            <select id="cabangUser" required>
+              <option value="">— Pilih Cabang —</option>
+              <option value="000">Kantor Pusat</option>
+              <option value="001">KC Jakarta Pusat</option>
+              <option value="002">KC Surabaya</option>
+              <option value="003">KC Bandung</option>
+              <option value="004">KC Medan</option>
+              <option value="005">KC Makassar</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="statusUser">Status <span class="req">*</span></label>
+            <select id="statusUser" required>
+              <option value="">— Pilih Status —</option>
+              <option value="A">Aktif</option>
+              <option value="N">Tidak Aktif</option>
+            </select>
+          </div>
+        </div>
+        <div class="section-divider" style="margin-top:24px"><span class="sdlabel">Akses Laporan</span></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Akses Modul Pelaporan</label>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px" id="aksesCheckboxes">
+              <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer"><input type="checkbox" value="rekadm"> Rekening Administratif</label>
+              <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer"><input type="checkbox" value="neraca"> Neraca</label>
+              <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer"><input type="checkbox" value="labarugi"> Laba Rugi</label>
+              <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer"><input type="checkbox" value="kasvalas"> Kas Valas</label>
+              <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer"><input type="checkbox" value="likuiditas"> Likuiditas</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="teleponUser">Nomor Telepon</label>
+            <input type="text" id="teleponUser" placeholder="cth: 0812-3456-7890">
+          </div>
+        </div>
+      </div>
+      <div class="form-footer">
+        <button type="button" class="btn btn-outline" onclick="handleReset()">
+          <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>Reset
+        </button>
+        <button type="submit" class="btn btn-save">
+          <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Simpan Pengguna
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <span class="card-header-title">Daftar Pengguna</span>
+      <div class="card-header-right">
+        <span class="tbl-counter" id="tblCounter">0 pengguna</span>
+      </div>
+    </div>
+    <div class="card-body" style="padding-bottom:8px">
+      <div class="search-bar">
+        <input class="search-input" type="text" id="searchInput" placeholder="Cari nama atau username..." oninput="renderTable()">
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="data-tbl">
+        <thead><tr><th>#</th><th>Pengguna</th><th>Email</th><th>Role</th><th>Cabang</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody id="tblBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var roleColors={SUPERADMIN:'#7c3aed',ADMIN:'#1d4ed8',MAKER:'#0891b2',CHECKER:'#d97706',APPROVER:'#15803d',VIEWER:'#6b7280'};
+var dataStore=[
+  {id:1,namaLengkap:'Ilham Dodo',username:'ilham.dodo',emailUser:'ilham@bank.co.id',roleUser:'ADMIN',cabangUser:'000',statusUser:'A',teleponUser:'0811-0000-001',akses:['rekadm','neraca','labarugi','kasvalas','likuiditas']},
+  {id:2,namaLengkap:'Sari Dewi',username:'sari.dewi',emailUser:'sari@bank.co.id',roleUser:'MAKER',cabangUser:'001',statusUser:'A',teleponUser:'0811-0000-002',akses:['rekadm','neraca']},
+  {id:3,namaLengkap:'Budi Santoso',username:'budi.santoso',emailUser:'budi@bank.co.id',roleUser:'APPROVER',cabangUser:'000',statusUser:'A',teleponUser:'0811-0000-003',akses:['rekadm','neraca','labarugi','kasvalas','likuiditas']}
+];
+var editingId=null,nextId=10;
+var cabangLabel={'000':'Kantor Pusat','001':'KC Jakarta Pusat','002':'KC Surabaya','003':'KC Bandung','004':'KC Medan','005':'KC Makassar'};
+
+function showToast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast show';if(type)t.classList.add(type);setTimeout(function(){t.className='toast';},3000);}
+function initials(name){return name.split(' ').map(function(w){return w[0];}).slice(0,2).join('').toUpperCase();}
+
+function getAkses(){
+  return Array.from(document.querySelectorAll('#aksesCheckboxes input[type=checkbox]:checked')).map(function(c){return c.value;});
+}
+
+function setAkses(list){
+  document.querySelectorAll('#aksesCheckboxes input[type=checkbox]').forEach(function(c){
+    c.checked=list.includes(c.value);
+  });
+}
+
+function handleSimpan(e){
+  e.preventDefault();
+  var nama=document.getElementById('namaLengkap').value.trim();
+  var uname=document.getElementById('username').value.trim();
+  var email=document.getElementById('emailUser').value.trim();
+  var role=document.getElementById('roleUser').value;
+  var cabang=document.getElementById('cabangUser').value;
+  var status=document.getElementById('statusUser').value;
+  if(!nama||!uname||!email||!role||!cabang||!status){showToast('⚠ Mohon lengkapi field wajib');return;}
+  var row={id:editingId!==null?editingId:nextId++,namaLengkap:nama,username:uname,emailUser:email,roleUser:role,cabangUser:cabang,statusUser:status,teleponUser:document.getElementById('teleponUser').value,akses:getAkses()};
+  if(editingId!==null){
+    var idx=dataStore.findIndex(function(d){return d.id===editingId;});
+    if(idx>-1)dataStore[idx]=row;
+    showToast('✏ Pengguna diperbarui','success');
+  }else{
+    dataStore.push(row);
+    showToast('✓ Pengguna disimpan','success');
+  }
+  editingId=null;renderTable();handleReset();
+}
+
+function editRow(id){
+  var row=dataStore.find(function(d){return d.id===id;});
+  if(!row)return;
+  editingId=id;
+  document.getElementById('namaLengkap').value=row.namaLengkap;
+  document.getElementById('username').value=row.username;
+  document.getElementById('emailUser').value=row.emailUser;
+  document.getElementById('roleUser').value=row.roleUser;
+  document.getElementById('cabangUser').value=row.cabangUser;
+  document.getElementById('statusUser').value=row.statusUser;
+  document.getElementById('teleponUser').value=row.teleponUser;
+  setAkses(row.akses||[]);
+  window.scrollTo({top:0,behavior:'smooth'});
+  showToast('✏ Mode edit aktif');
+}
+
+function deleteRow(id){
+  if(!confirm('Hapus pengguna ini?'))return;
+  dataStore=dataStore.filter(function(d){return d.id!==id;});
+  renderTable();showToast('🗑 Pengguna dihapus');
+}
+
+function handleReset(){
+  document.getElementById('mainForm').reset();
+  setAkses([]);editingId=null;
+}
+
+function renderTable(){
+  var q=document.getElementById('searchInput').value.toLowerCase();
+  var filtered=dataStore.filter(function(r){
+    return !q||r.namaLengkap.toLowerCase().includes(q)||r.username.toLowerCase().includes(q);
+  });
+  document.getElementById('tblCounter').textContent=filtered.length+' pengguna';
+  var tbody=document.getElementById('tblBody');
+  if(!filtered.length){
+    tbody.innerHTML='<tr><td colspan="7"><div class="tbl-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Tidak ada pengguna ditemukan.</span></div></td></tr>';
+    return;
+  }
+  var html='';
+  filtered.forEach(function(row,i){
+    var color=roleColors[row.roleUser]||'#6b7280';
+    html+='<tr class="'+(editingId===row.id?'editing-row':'')+'">';
+    html+='<td><span class="row-no">'+(i+1)+'</span></td>';
+    html+='<td style="display:flex;align-items:center;gap:10px;padding:10px 12px"><span class="avatar" style="background:'+color+'">'+initials(row.namaLengkap)+'</span><div><div style="font-weight:600;font-size:13px">'+row.namaLengkap+'</div><div style="font-size:11px;color:var(--text-muted)">@'+row.username+'</div></div></td>';
+    html+='<td style="font-size:12.5px">'+row.emailUser+'</td>';
+    html+='<td><span class="role-chip" style="background:'+color+'1a;color:'+color+'">'+row.roleUser+'</span></td>';
+    html+='<td style="font-size:12px">'+( cabangLabel[row.cabangUser]||row.cabangUser)+'</td>';
+    html+='<td><span class="'+(row.statusUser==='A'?'badge-aktif':'badge-nonaktif')+'">'+(row.statusUser==='A'?'Aktif':'Tidak Aktif')+'</span></td>';
+    html+='<td style="white-space:nowrap">';
+    html+='<button type="button" class="btn-sm btn-edit" onclick="editRow('+row.id+')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button> ';
+    html+='<button type="button" class="btn-sm btn-del" onclick="deleteRow('+row.id+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>Hapus</button></td></tr>';
+  });
+  tbody.innerHTML=html;
+}
+renderTable();
+</script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Master Kode List</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--teal:#0097a7;--teal-dark:#00838f;--teal-light:#e0f7fa;--bg:#f0f4f8;--white:#ffffff;--border:#e2e8f0;--text-main:#1e293b;--text-muted:#6b7280;--text-label:#374151;--shadow:0 1px 4px rgba(0,0,0,0.08);--radius:7px;--danger:#dc2626;--success:#16a34a;--warn:#d97706}
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text-main);min-height:100vh;padding:0 0 60px}
+  .topnav{background:var(--white);border-bottom:1px solid var(--border);padding:0 32px;height:56px;display:flex;align-items:center;gap:8px;box-shadow:var(--shadow);position:sticky;top:0;z-index:100}
+  .topnav .brand{color:var(--teal);font-weight:700;font-size:16px}
+  .topnav .sep{color:#cbd5e1;font-size:18px;margin:0 2px}
+  .topnav .page-title{color:var(--text-main);font-weight:600;font-size:15px}
+  .breadcrumb{padding:16px 32px 0;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted)}
+  .breadcrumb a{color:var(--teal);text-decoration:none}
+  .main{padding:20px 32px;max-width:1200px}
+  .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-bottom:20px}
+  .card-header{background:var(--white);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:8px}
+  .card-header-icon{width:28px;height:28px;background:var(--teal-light);border-radius:6px;display:flex;align-items:center;justify-content:center}
+  .card-header-icon svg{width:16px;height:16px;stroke:var(--teal);fill:none;stroke-width:2}
+  .card-header-title{font-weight:600;font-size:14px;color:var(--teal);flex:1}
+  .card-header-right{display:flex;align-items:center;gap:8px}
+  .card-body{padding:24px 20px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 28px}
+  .form-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+  .form-grid.cols-1{grid-template-columns:1fr}
+  .form-group{display:flex;flex-direction:column;gap:5px}
+  .form-group.full{grid-column:1/-1}
+  label{font-size:13px;font-weight:500;color:var(--text-label);display:flex;align-items:center;gap:4px}
+  label .req{color:var(--danger);font-size:12px}
+  .field-hint{font-size:11px;color:var(--text-muted);line-height:1.4;margin-top:2px}
+  input[type="text"],select,textarea{width:100%;height:38px;padding:0 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;color:var(--text-main);background:var(--white);outline:none;transition:border-color .15s,box-shadow .15s}
+  input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,151,167,.12)}
+  select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
+  textarea{height:auto;min-height:60px;padding:10px 12px;resize:vertical;line-height:1.5}
+  .section-divider{display:flex;align-items:center;gap:12px;margin:8px 0 20px}
+  .section-divider .sdlabel{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);white-space:nowrap}
+  .section-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+  .form-footer{display:flex;justify-content:flex-end;gap:10px;padding:16px 20px;background:#f8fafc;border-top:1px solid var(--border)}
+  .btn{height:38px;padding:0 20px;border-radius:var(--radius);font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;border:1px solid;transition:all .15s}
+  .btn svg{width:16px;height:16px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2}
+  .btn-outline{background:var(--white);border-color:var(--border);color:var(--text-main)}
+  .btn-outline:hover{background:var(--bg)}
+  .btn-save{background:#f0fdf4;border-color:#86efac;color:var(--success)}
+  .btn-save:hover{background:#dcfce7}
+  .btn-sm{height:28px;padding:0 10px;border-radius:5px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;border:1px solid;transition:all .15s}
+  .btn-sm svg{width:12px;height:12px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2}
+  .btn-edit{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+  .btn-edit:hover{background:#dbeafe}
+  .btn-del{background:#fef2f2;border-color:#fecaca;color:var(--danger)}
+  .btn-del:hover{background:#fee2e2}
+  /* Tabs */
+  .tabs{display:flex;gap:4px;padding:12px 20px;border-bottom:1px solid var(--border);background:#fafbfc;flex-wrap:wrap}
+  .tab{height:32px;padding:0 16px;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border:1px solid transparent;color:var(--text-muted);transition:all .15s}
+  .tab:hover{background:var(--teal-light);color:var(--teal)}
+  .tab.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .tab-badge{background:rgba(255,255,255,.25);padding:1px 6px;border-radius:10px;font-size:10px}
+  .tab.active .tab-badge{background:rgba(255,255,255,.3)}
+  .tab:not(.active) .tab-badge{background:var(--teal-light);color:var(--teal)}
+  /* Table */
+  .search-bar{display:flex;gap:10px;margin-bottom:16px;align-items:center}
+  .search-input{height:36px;flex:1;max-width:300px;border:1px solid var(--border);border-radius:var(--radius);padding:0 10px 0 32px;font-size:13px;outline:none;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;transition:border-color .15s}
+  .search-input:focus{border-color:var(--teal)}
+  .tbl-counter{font-size:12px;background:var(--teal-light);color:var(--teal);padding:2px 10px;border-radius:20px;font-weight:600}
+  .tbl-wrap{overflow-x:auto}
+  table.data-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+  table.data-tbl thead th{background:#f8fafc;padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--border);white-space:nowrap}
+  table.data-tbl tbody tr{border-bottom:1px solid #f1f5f9;transition:background .12s}
+  table.data-tbl tbody tr:last-child{border-bottom:none}
+  table.data-tbl tbody tr:hover{background:#f8fafc}
+  table.data-tbl td{padding:10px 12px;vertical-align:middle}
+  .tbl-empty{display:flex;align-items:center;justify-content:center;gap:10px;padding:32px;color:var(--text-muted);font-size:13px}
+  .tbl-empty svg{width:28px;height:28px;stroke:var(--text-muted);fill:none;stroke-width:1.5;opacity:.5}
+  .row-no{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#f1f5f9;border-radius:4px;font-size:11px;font-weight:600;color:var(--text-muted)}
+  .editing-row{background:#fef9c3!important}
+  .code-chip{font-family:'Courier New',monospace;font-size:12px;font-weight:700;background:#f1f5f9;padding:2px 8px;border-radius:4px;color:#1e293b}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(24px);background:#1e293b;color:#fff;padding:10px 22px;border-radius:8px;font-size:13.5px;font-weight:500;opacity:0;pointer-events:none;transition:all .22s;z-index:9999}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.success{background:#15803d}
+  .tab-content{display:none}.tab-content.active{display:block}
+</style>
+</head>
+<body>
+<div class="breadcrumb">
+  <a href="index.html">Dashboard</a>
+  <span>›</span><span>Administrasi</span>
+  <span>›</span><span>Master Kode List</span>
+</div>
+
+<div class="main">
+
+  <!-- ADD FORM -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+      <span class="card-header-title">Tambah / Edit Kode</span>
+    </div>
+    <form id="mainForm" onsubmit="handleSimpan(event)" novalidate>
+      <div class="card-body">
+        <div class="form-grid cols-3">
+          <div class="form-group">
+            <label for="jenisKode">Jenis Kode / Dimensi <span class="req">*</span></label>
+            <select id="jenisKode" required onchange="updateTabFromForm()">
+              <option value="">— Pilih Dimensi —</option>
+              <option value="cakupan">Cakupan Data</option>
+              <option value="jenis_periode">Jenis Periode</option>
+              <option value="sandi_pos">Sandi Pos Neraca</option>
+              <option value="sandi_rekadm">Sandi Rek. Administratif</option>
+              <option value="sandi_labarugi">Sandi Laba Rugi</option>
+              <option value="sandi_likuiditas">Sandi Likuiditas</option>
+              <option value="valuta">Kode Valuta</option>
+              <option value="sektor">Sandi Sektor Ekonomi</option>
+              <option value="golongan">Golongan Debitur</option>
+              <option value="kategori_lainnya">Kategori Lainnya</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="kodeValue">Kode / Sandi <span class="req">*</span></label>
+            <input type="text" id="kodeValue" placeholder="cth: 001" maxlength="20" required>
+          </div>
+          <div class="form-group">
+            <label for="labelKode">Label / Uraian <span class="req">*</span></label>
+            <input type="text" id="labelKode" placeholder="cth: Individual" required>
+          </div>
+          <div class="form-group full">
+            <label for="keteranganKode">Keterangan</label>
+            <textarea id="keteranganKode" placeholder="Deskripsi atau keterangan tambahan (opsional)..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="form-footer">
+        <button type="button" class="btn btn-outline" onclick="handleReset()">
+          <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>Reset
+        </button>
+        <button type="submit" class="btn btn-save">
+          <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Simpan Kode
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- TABLE CARD with tabs -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+      </div>
+      <span class="card-header-title">Daftar Kode Referensi</span>
+      <div class="card-header-right">
+        <span class="tbl-counter" id="tblCounter">0 kode</span>
+      </div>
+    </div>
+
+    <div class="tabs" id="tabsContainer"></div>
+
+    <div class="card-body" style="padding-bottom:8px">
+      <div class="search-bar">
+        <input class="search-input" type="text" id="searchInput" placeholder="Cari kode atau label..." oninput="renderTable()">
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="data-tbl">
+        <thead><tr><th>#</th><th>Jenis/Dimensi</th><th>Kode</th><th>Label / Uraian</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+        <tbody id="tblBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var dimensiLabel={
+  cakupan:'Cakupan Data',jenis_periode:'Jenis Periode',sandi_pos:'Sandi Pos Neraca',
+  sandi_rekadm:'Sandi Rek. Admin',sandi_labarugi:'Sandi Laba Rugi',sandi_likuiditas:'Sandi Likuiditas',
+  valuta:'Kode Valuta',sektor:'Sektor Ekonomi',golongan:'Golongan Debitur',kategori_lainnya:'Kategori Lainnya'
+};
+
+// Seed data dari metadata BI-ANTASENA
+var dataStore=[
+  {id:1,jenisKode:'cakupan',kodeValue:'1',labelKode:'Individual',keteranganKode:'Data Bank secara individual / sendiri'},
+  {id:2,jenisKode:'cakupan',kodeValue:'2',labelKode:'Konsolidasi',keteranganKode:'Data Bank terkonsolidasi dengan anak perusahaan'},
+  {id:3,jenisKode:'cakupan',kodeValue:'3',labelKode:'Kantor Pusat',keteranganKode:'Kantor Pusat Bank'},
+  {id:4,jenisKode:'cakupan',kodeValue:'4',labelKode:'Kantor Cabang',keteranganKode:'Kantor Cabang di dalam negeri'},
+  {id:5,jenisKode:'jenis_periode',kodeValue:'B',labelKode:'Bulanan',keteranganKode:'Laporan periode bulanan'},
+  {id:6,jenisKode:'jenis_periode',kodeValue:'T',labelKode:'Triwulanan',keteranganKode:'Laporan periode per triwulan'},
+  {id:7,jenisKode:'jenis_periode',kodeValue:'S',labelKode:'Semesteran',keteranganKode:'Laporan periode per semester'},
+  {id:8,jenisKode:'jenis_periode',kodeValue:'A',labelKode:'Tahunan',keteranganKode:'Laporan periode tahunan'},
+  {id:9,jenisKode:'sandi_pos',kodeValue:'1001',labelKode:'Kas',keteranganKode:'Uang tunai Rupiah dan valas milik bank'},
+  {id:10,jenisKode:'sandi_pos',kodeValue:'1002',labelKode:'Penempatan pada BI',keteranganKode:'Giro dan SRBI pada Bank Indonesia'},
+  {id:11,jenisKode:'sandi_pos',kodeValue:'1003',labelKode:'Penempatan pada Bank Lain',keteranganKode:'Giro, tabungan, deposito antar bank'},
+  {id:12,jenisKode:'sandi_pos',kodeValue:'1004',labelKode:'Surat Berharga',keteranganKode:'Obligasi, SBN, dan efek lainnya'},
+  {id:13,jenisKode:'sandi_pos',kodeValue:'1005',labelKode:'Kredit yang Diberikan',keteranganKode:'Total kredit kepada pihak ketiga'},
+  {id:14,jenisKode:'sandi_pos',kodeValue:'2001',labelKode:'DPK — Giro',keteranganKode:'Dana Pihak Ketiga berupa Giro'},
+  {id:15,jenisKode:'sandi_pos',kodeValue:'2002',labelKode:'DPK — Tabungan',keteranganKode:'Dana Pihak Ketiga berupa Tabungan'},
+  {id:16,jenisKode:'sandi_pos',kodeValue:'2003',labelKode:'DPK — Deposito',keteranganKode:'Dana Pihak Ketiga berupa Deposito'},
+  {id:17,jenisKode:'sandi_rekadm',kodeValue:'RA01',labelKode:'Garansi Bank',keteranganKode:'Komitmen bank sebagai penjamin'},
+  {id:18,jenisKode:'sandi_rekadm',kodeValue:'RA02',labelKode:'Letter of Credit (LC)',keteranganKode:'LC yang diterbitkan bank'},
+  {id:19,jenisKode:'sandi_rekadm',kodeValue:'RA03',labelKode:'Fasilitas Kredit Belum Ditarik',keteranganKode:'Plafon kredit yang belum digunakan'},
+  {id:20,jenisKode:'sandi_rekadm',kodeValue:'RA04',labelKode:'Transaksi Derivatif',keteranganKode:'Forward, swap, opsi, dan derivatif lainnya'},
+  {id:21,jenisKode:'valuta',kodeValue:'IDR',labelKode:'Rupiah Indonesia',keteranganKode:''},
+  {id:22,jenisKode:'valuta',kodeValue:'USD',labelKode:'Dolar Amerika Serikat',keteranganKode:''},
+  {id:23,jenisKode:'valuta',kodeValue:'EUR',labelKode:'Euro',keteranganKode:''},
+  {id:24,jenisKode:'valuta',kodeValue:'SGD',labelKode:'Dolar Singapura',keteranganKode:''},
+  {id:25,jenisKode:'valuta',kodeValue:'JPY',labelKode:'Yen Jepang',keteranganKode:''},
+  {id:26,jenisKode:'sektor',kodeValue:'100',labelKode:'Pemerintah',keteranganKode:'Pemerintah Pusat dan Daerah'},
+  {id:27,jenisKode:'sektor',kodeValue:'200',labelKode:'BUMN',keteranganKode:'Badan Usaha Milik Negara'},
+  {id:28,jenisKode:'sektor',kodeValue:'300',labelKode:'Swasta',keteranganKode:'Perusahaan Swasta'},
+  {id:29,jenisKode:'sektor',kodeValue:'400',labelKode:'Perorangan',keteranganKode:'Individu / Rumah Tangga'},
+  {id:30,jenisKode:'golongan',kodeValue:'01',labelKode:'Bank',keteranganKode:''},
+  {id:31,jenisKode:'golongan',kodeValue:'02',labelKode:'Lembaga Keuangan Non-Bank',keteranganKode:''},
+  {id:32,jenisKode:'golongan',kodeValue:'03',labelKode:'Pemerintah',keteranganKode:''},
+  {id:33,jenisKode:'golongan',kodeValue:'04',labelKode:'Korporasi Non-Keuangan',keteranganKode:''},
+  {id:34,jenisKode:'golongan',kodeValue:'05',labelKode:'Perorangan',keteranganKode:''},
+];
+
+var activeTab='all', editingId=null, nextId=200;
+
+function showToast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast show';if(type)t.classList.add(type);setTimeout(function(){t.className='toast';},3000);}
+
+function buildTabs(){
+  var counts={all:dataStore.length};
+  Object.keys(dimensiLabel).forEach(function(k){counts[k]=dataStore.filter(function(d){return d.jenisKode===k;}).length;});
+  var html='<div class="tab '+(activeTab==='all'?'active':'')+'" onclick="switchTab(\'all\')">Semua <span class="tab-badge">'+counts.all+'</span></div>';
+  Object.keys(dimensiLabel).forEach(function(k){
+    if(counts[k]>0||activeTab===k){
+      html+='<div class="tab '+(activeTab===k?'active':'')+'" onclick="switchTab(\''+k+'\')">'+dimensiLabel[k]+' <span class="tab-badge">'+counts[k]+'</span></div>';
+    }
+  });
+  document.getElementById('tabsContainer').innerHTML=html;
+}
+
+function switchTab(tab){activeTab=tab;buildTabs();renderTable();}
+
+function updateTabFromForm(){
+  var v=document.getElementById('jenisKode').value;
+  if(v)switchTab(v);
+}
+
+function handleSimpan(e){
+  e.preventDefault();
+  var jenis=document.getElementById('jenisKode').value.trim();
+  var kode=document.getElementById('kodeValue').value.trim();
+  var label=document.getElementById('labelKode').value.trim();
+  if(!jenis||!kode||!label){
+    showToast('⚠ Mohon lengkapi field wajib');return;
+  }
+  var row={id:editingId!==null?editingId:nextId++,jenisKode:jenis,kodeValue:kode,labelKode:label,keteranganKode:document.getElementById('keteranganKode').value.trim()};
+  if(editingId!==null){
+    var idx=dataStore.findIndex(function(d){return d.id===editingId;});
+    if(idx>-1)dataStore[idx]=row;
+    showToast('✏ Kode berhasil diperbarui','success');
+  }else{
+    dataStore.push(row);
+    showToast('✓ Kode berhasil disimpan','success');
+  }
+  editingId=null;buildTabs();renderTable();handleReset();
+}
+
+function editRow(id){
+  var row=dataStore.find(function(d){return d.id===id;});
+  if(!row)return;
+  editingId=id;
+  document.getElementById('jenisKode').value=row.jenisKode;
+  document.getElementById('kodeValue').value=row.kodeValue;
+  document.getElementById('labelKode').value=row.labelKode;
+  document.getElementById('keteranganKode').value=row.keteranganKode;
+  window.scrollTo({top:0,behavior:'smooth'});
+  showToast('✏ Mode edit aktif');
+}
+
+function deleteRow(id){
+  if(!confirm('Hapus kode ini?'))return;
+  dataStore=dataStore.filter(function(d){return d.id!==id;});
+  buildTabs();renderTable();showToast('🗑 Kode dihapus');
+}
+
+function handleReset(){
+  document.getElementById('mainForm').reset();
+  editingId=null;
+}
+
+function renderTable(){
+  var q=document.getElementById('searchInput').value.toLowerCase();
+  var filtered=dataStore.filter(function(r){
+    var matchTab=activeTab==='all'||r.jenisKode===activeTab;
+    var matchQ=!q||r.kodeValue.toLowerCase().includes(q)||r.labelKode.toLowerCase().includes(q);
+    return matchTab&&matchQ;
+  });
+  document.getElementById('tblCounter').textContent=filtered.length+' kode';
+  var tbody=document.getElementById('tblBody');
+  if(!filtered.length){
+    tbody.innerHTML='<tr><td colspan="6"><div class="tbl-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg><span>Tidak ada kode ditemukan.</span></div></td></tr>';
+    return;
+  }
+  var html='';
+  filtered.forEach(function(row,i){
+    html+='<tr class="'+(editingId===row.id?'editing-row':'')+'">';
+    html+='<td><span class="row-no">'+(i+1)+'</span></td>';
+    html+='<td style="font-size:12px;color:var(--text-muted)">'+( dimensiLabel[row.jenisKode]||row.jenisKode)+'</td>';
+    html+='<td><span class="code-chip">'+row.kodeValue+'</span></td>';
+    html+='<td style="font-weight:500">'+row.labelKode+'</td>';
+    html+='<td style="font-size:12px;color:var(--text-muted)">'+( row.keteranganKode||'—')+'</td>';
+    html+='<td style="white-space:nowrap">';
+    html+='<button type="button" class="btn-sm btn-edit" onclick="editRow('+row.id+')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button> ';
+    html+='<button type="button" class="btn-sm btn-del" onclick="deleteRow('+row.id+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>Hapus</button></td></tr>';
+  });
+  tbody.innerHTML=html;
+}
+
+buildTabs();renderTable();
+</script>
+</body>
+</html>
