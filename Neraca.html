@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neraca</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal: #0097a7;
+    --teal-dark: #00838f;
+    --teal-light: #e0f7fa;
+    --bg: #f1f5f9;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --text-label: #374151;
+    --shadow: 0 2px 8px rgba(0,0,0,0.06);
+    --radius: 8px;
+    --danger: #dc2626;
+    --success: #16a34a;
+    --warn: #d97706;
+    --warn-light: #fffbeb;
+    --warn-border: #fde68a;
+    --info: #1d4ed8;
+    --info-light: #eff6ff;
+    --info-border: #bfdbfe;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  .breadcrumb {
+    padding: 18px 28px 0;
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--text-muted);
+  }
+  .breadcrumb a { color: var(--teal); text-decoration: none; }
+
+  .main { padding: 22px 28px; max-width: 1200px; }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-header-title { color: var(--teal); font-size: 14px; font-weight: 700; flex: 1; }
+  .card-header-right { display: flex; align-items: center; gap: 8px; }
+  .card-body { padding: 22px 20px; }
+
+  .section-divider {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
+  }
+  .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .sdlabel { font-size: 12px; font-weight: 700; letter-spacing: .05em; color: var(--text-muted); text-transform: uppercase; }
+
+  .form-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px 24px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  label { font-size: 13px; font-weight: 600; color: #334155; }
+  .req { color: var(--danger); }
+  .field-hint { font-size: 11px; line-height: 1.5; color: var(--text-muted); }
+
+  input, select {
+    width: 100%; height: 40px;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 0 12px; font-size: 13px; font-family: inherit;
+    outline: none; transition: .15s; background: var(--white);
+  }
+  input:focus, select:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(0,151,167,.12);
+  }
+  input[readonly] { background: #f8fafc; }
+
+  select {
+    appearance: none; -webkit-appearance: none;
+    padding: 0 44px 0 12px; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; background-size: 16px;
+    background-color: var(--white);
+  }
+
+  .input-prefix-wrap { position: relative; }
+  .prefix {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 48px;
+    border-right: 1px solid var(--border); background: #f8fafc;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted); font-size: 12px; font-weight: 700;
+    border-radius: 8px 0 0 8px;
+  }
+  .input-prefix-wrap input { padding-left: 56px; }
+  .readonly-input { background: #f8fafc !important; color: var(--text-muted); cursor: not-allowed; }
+
+  .form-footer {
+    padding: 16px 20px; border-top: 1px solid var(--border);
+    background: #f8fafc; display: flex; justify-content: flex-end; gap: 10px;
+  }
+
+  .btn {
+    height: 40px; border-radius: var(--radius); border: 1px solid;
+    padding: 0 18px; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: .15s; display: inline-flex; align-items: center; gap: 6px;
+    font-family: inherit;
+  }
+  .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .btn-primary { background: var(--teal); border-color: var(--teal); color: white; }
+  .btn-primary:hover { background: var(--teal-dark); }
+  .btn-save { background: #f0fdf4; border-color: #86efac; color: var(--success); }
+  .btn-save:hover { background: #dcfce7; }
+  .btn-outline { background: white; border-color: var(--border); }
+  .btn-outline:hover { background: #f8fafc; }
+
+  .btn-sm {
+    height: 28px; padding: 0 10px; border-radius: 5px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11.5px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 5px;
+    border: 1px solid; transition: all 0.15s;
+  }
+  .btn-sm svg { width: 12px; height: 12px; flex-shrink: 0; }
+  .btn-edit { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+  .btn-edit:hover { background: #dbeafe; }
+  .btn-del { background: #fef2f2; border-color: #fecaca; color: var(--danger); }
+  .btn-del:hover { background: #fee2e2; }
+  .btn-import { background: #f5f3ff; border-color: #c4b5fd; color: #6d28d9; }
+  .btn-import:hover { background: #ede9fe; }
+
+  /* TABLE */
+  .tbl-counter { font-size: 12px; background: var(--teal-light); color: var(--teal); padding: 2px 10px; border-radius: 20px; font-weight: 600; }
+  .tbl-wrap { overflow-x: auto; }
+  table.data-tbl {
+    width: 100%; border-collapse: collapse; font-size: 12.5px;
+  }
+  table.data-tbl thead th {
+    background: #f8fafc; padding: 10px 12px; text-align: left;
+    font-size: 11px; font-weight: 700; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--border); white-space: nowrap;
+  }
+  table.data-tbl thead th.num { text-align: right; }
+  table.data-tbl tbody tr { border-bottom: 1px solid #f1f5f9; transition: background 0.12s; }
+  table.data-tbl tbody tr:last-child { border-bottom: none; }
+  table.data-tbl tbody tr:hover { background: #f8fafc; }
+  table.data-tbl tbody tr.editing-row { background: #fff7ed !important; }
+  table.data-tbl td { padding: 10px 12px; vertical-align: middle; }
+  table.data-tbl td.num { text-align: right; font-family: monospace; font-size: 12px; }
+  table.data-tbl tfoot td {
+    padding: 10px 12px; border-top: 2px solid var(--border);
+    font-size: 12px; font-weight: 700; color: var(--text-main); background: #f8fafc;
+  }
+  table.data-tbl tfoot td.num { text-align: right; font-family: monospace; color: var(--teal); }
+
+  .tbl-empty {
+    text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 13px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .tbl-empty svg { width: 36px; height: 36px; stroke: #cbd5e1; fill: none; stroke-width: 1.5; }
+
+  .vbadge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11.5px; font-weight: 700;
+    background: var(--teal-light); color: var(--teal); letter-spacing: 0.04em;
+  }
+  .badge-ok { background: #f0fdf4; color: var(--success); }
+  .badge-err { background: #fef2f2; color: var(--danger); }
+  .badge-warn { background: var(--warn-light); color: var(--warn); }
+  .badge-empty { background: #f1f5f9; color: #94a3b8; }
+
+  .row-no {
+    width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9;
+    color: var(--text-muted); display: inline-flex; align-items: center;
+    justify-content: center; font-size: 11px; font-weight: 700;
+  }
+
+  /* ── VALIDASI PANEL ── */
+  .validasi-panel {
+    display: none;
+    margin-top: 20px;
+    border: 1.5px solid var(--warn-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--warn-light);
+  }
+
+  .validasi-panel.show { display: block; }
+  .validasi-panel.valid { border-color: #86efac; background: #f0fdf4; }
+  .validasi-panel.invalid { border-color: #fecaca; background: #fef2f2; }
+
+  .validasi-header {
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--warn-border);
+    background: rgba(255,255,255,0.5);
+  }
+  .validasi-panel.valid .validasi-header { border-color: #86efac; }
+  .validasi-panel.invalid .validasi-header { border-color: #fecaca; }
+
+  .validasi-icon {
+    width: 30px; height: 30px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--warn-border); flex-shrink: 0;
+  }
+  .validasi-panel.valid .validasi-icon { background: #86efac; }
+  .validasi-panel.invalid .validasi-icon { background: #fecaca; }
+  .validasi-icon svg { width: 16px; height: 16px; stroke: #92400e; fill: none; }
+  .validasi-panel.valid .validasi-icon svg { stroke: var(--success); }
+  .validasi-panel.invalid .validasi-icon svg { stroke: var(--danger); }
+
+  .validasi-title { font-size: 13px; font-weight: 700; color: #92400e; flex: 1; }
+  .validasi-panel.valid .validasi-title { color: #15803d; }
+  .validasi-panel.invalid .validasi-title { color: var(--danger); }
+
+  .validasi-body { padding: 16px; }
+
+  .validasi-rule-text {
+    font-size: 12px; color: #78350f; line-height: 1.6;
+    background: rgba(255,255,255,0.6); border-radius: 6px;
+    padding: 10px 12px; margin-bottom: 14px;
+  }
+  .validasi-rule-text strong { color: #92400e; }
+
+  .validasi-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .validasi-box {
+    background: white; border-radius: 6px;
+    border: 1px solid var(--warn-border);
+    padding: 12px 14px;
+  }
+  .validasi-panel.valid .validasi-box { border-color: #86efac; }
+  .validasi-panel.invalid .validasi-box { border-color: #fecaca; }
+
+  .vbox-label { font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .vbox-value { font-size: 16px; font-weight: 700; color: var(--text-main); font-family: monospace; }
+  .vbox-value.ok { color: var(--success); }
+  .vbox-value.err { color: var(--danger); }
+
+  .validasi-status-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700;
+    background: var(--warn-border); color: #92400e;
+  }
+  .validasi-status-badge.ok { background: #86efac; color: #166534; }
+  .validasi-status-badge.err { background: #fecaca; color: var(--danger); }
+  .validasi-status-badge svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ── PENEMPATAN BI AREA ── */
+  .penempatan-bi-area {
+    margin-top: 12px;
+    background: white;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    padding: 14px;
+  }
+  .pbi-area-title {
+    font-size: 12px; font-weight: 700; color: #1d4ed8; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .pbi-area-title svg { width: 14px; height: 14px; stroke: #1d4ed8; fill: none; }
+  .pbi-info-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px;
+  }
+  .pbi-info-box {
+    background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 5px;
+    padding: 10px 12px;
+  }
+  .pbi-info-val { font-size: 13px; font-weight: 700; color: #1d4ed8; margin-top: 3px; }
+  .pbi-refresh-btn {
+    height: 28px; padding: 0 10px; border-radius: 5px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11.5px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 5px;
+    border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8;
+    transition: all 0.15s;
+  }
+  .pbi-refresh-btn:hover { background: #dbeafe; }
+  .pbi-refresh-btn svg { width: 12px; height: 12px; stroke: #1d4ed8; fill: none; }
+
+  /* ── TABUNGAN IMPORT SECTION ── */
+  .tabungan-import-area {
+    margin-top: 12px;
+    background: white;
+    border: 1px dashed #c4b5fd;
+    border-radius: 6px;
+    padding: 14px;
+  }
+  .tabungan-import-title {
+    font-size: 12px; font-weight: 700; color: #6d28d9; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tabungan-import-title svg { width: 14px; height: 14px; stroke: #6d28d9; fill: none; }
+  .tabungan-load-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .tabungan-load-row label {
+    font-size: 12px; font-weight: 600; color: #334155; white-space: nowrap;
+  }
+
+  .tbl-ref {
+    width: 100%; border-collapse: collapse; font-size: 11.5px; margin-top: 10px;
+  }
+  .tbl-ref thead th {
+    background: #f5f3ff; padding: 7px 10px; text-align: left;
+    font-size: 10px; font-weight: 700; color: #6d28d9;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    border-bottom: 1px solid #c4b5fd;
+  }
+  .tbl-ref thead th.num { text-align: right; }
+  .tbl-ref tbody tr { border-bottom: 1px solid #f1f5f9; }
+  .tbl-ref tbody td { padding: 7px 10px; }
+  .tbl-ref tbody td.num { text-align: right; font-family: monospace; }
+  .tbl-ref tfoot td {
+    padding: 7px 10px; border-top: 1.5px solid #c4b5fd;
+    font-size: 11.5px; font-weight: 700; background: #f5f3ff;
+  }
+  .tbl-ref tfoot td.num { text-align: right; font-family: monospace; color: #6d28d9; }
+
+  /* ── BADGE TIDAK BALANCE ── */
+  .badge-bi-invalid {
+    display: inline-flex; flex-direction: column; align-items: flex-start;
+    padding: 3px 8px; border-radius: 4px; gap: 1px;
+    background: #fef2f2; border: 1px solid #fecaca;
+  }
+  .badge-bi-invalid .bi-badge-main {
+    font-size: 11px; font-weight: 700; color: var(--danger);
+  }
+  .badge-bi-invalid .bi-badge-sub {
+    font-size: 9.5px; font-weight: 600; color: #f87171; line-height: 1.2;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: #0f172a; color: white; padding: 12px 18px;
+    border-radius: 8px; opacity: 0; transform: translateY(60px);
+    transition: .3s; z-index: 999; font-size: 14px; font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18); pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.success { background: var(--success); }
+  .toast.error { background: var(--danger); }
+
+  /* IMPORT MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(15,23,42,0.45); z-index: 200;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white); border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    width: 480px; max-width: 95vw; overflow: hidden;
+    animation: modalIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes modalIn {
+    from { opacity:0; transform: scale(0.93) translateY(12px); }
+    to   { opacity:1; transform: scale(1) translateY(0); }
+  }
+  .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .modal-header-icon { width: 32px; height: 32px; background: #f5f3ff; border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+  .modal-header-icon svg { width: 18px; height: 18px; stroke: #6d28d9; }
+  .modal-header-title { font-weight: 700; font-size: 15px; color: var(--text-main); flex: 1; }
+  .modal-close { width: 28px; height: 28px; border: none; background: none; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; border-radius: 5px; transition: background 0.12s; }
+  .modal-close:hover { background: var(--bg); }
+  .modal-body { padding: 20px; }
+  .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); background: #f8fafc; display: flex; justify-content: flex-end; gap: 8px; }
+
+  .dropzone {
+    border: 2px dashed #c4b5fd; border-radius: 8px; background: #faf5ff;
+    padding: 32px 20px; text-align: center; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s; position: relative;
+  }
+  .dropzone:hover, .dropzone.drag-over { border-color: #6d28d9; background: #f5f3ff; }
+  .dropzone input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; border: none; }
+  .dropzone-icon { width: 44px; height: 44px; background: #ede9fe; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+  .dropzone-icon svg { width: 22px; height: 22px; stroke: #6d28d9; }
+  .dropzone-label { font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
+  .dropzone-sub { font-size: 12px; color: var(--text-muted); }
+  .dropzone-file-name { margin-top: 12px; font-size: 12px; font-weight: 600; color: #6d28d9; background: #ede9fe; border-radius: 5px; padding: 4px 10px; display: inline-block; }
+  .import-note { margin-top: 14px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 6px; padding: 10px 13px; font-size: 12px; color: #92400e; line-height: 1.5; }
+  .import-template-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 12px; font-weight: 600; color: #6d28d9; text-decoration: none; cursor: pointer; }
+  .import-template-link:hover { text-decoration: underline; }
+  .import-template-link svg { width: 13px; height: 13px; stroke: #6d28d9; }
+  .btn-import-modal { background: #6d28d9; border-color: #6d28d9; color: white; font-family: inherit; }
+  .btn-import-modal:hover { background: #5b21b6; border-color: #5b21b6; }
+
+  @media(max-width:900px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .validasi-grid { grid-template-columns: 1fr; }
+    .pbi-info-grid { grid-template-columns: 1fr; }
+    .main { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="breadcrumb">
+  <a href="#">Pelaporan</a>
+  <span>›</span>
+  <a href="#">Laporan Posisi Keuangan</a>
+  <span>›</span>
+  <span>Neraca</span>
+</div>
+
+<div class="main">
+<form id="mainForm" onsubmit="handleGenerate(event)" novalidate>
+
+  <!-- IDENTIFIKASI -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-header-title">Identifikasi Neraca</span>
+    </div>
+    <div class="card-body">
+      <div class="section-divider"><span class="sdlabel">Informasi Dasar</span></div>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Pos Neraca <span class="req">*</span></label>
+          <select id="posNeraca" required onchange="onPosNeracaChange()">
+            <option value="">— Pilih Pos Neraca —</option>
+            <option value="01.02.00.00.00.00">01.02.00.00.00.00 — Penempatan pada Bank Indonesia</option>
+            <option value="02.02.01.00.00.00">02.02.01.00.00.00 — Tabungan Berdasarkan Prinsip Konvensional</option>
+            <option value="02.02.02.01.00.00">02.02.02.01.00.00 — Tabungan Akad Wadiah</option>
+            <option value="02.02.02.02.00.00">02.02.02.02.00.00 — Tabungan Mudharabah - Non Profit Sharing</option>
+            <option value="02.02.02.03.00.00">02.02.02.03.00.00 — Tabungan Mudharabah - Profit Sharing</option>
+            <option value="02.03.01.00.00.00">02.03.01.00.00.00 — Deposito Berdasarkan Prinsip Konvensional</option>
+            <option value="02.03.02.01.00.00">02.03.02.01.00.00 — Deposito Mudharabah – Non Profit Sharing</option>
+            <option value="02.03.02.02.00.00">02.03.02.02.00.00 — Deposito Mudharabah – Profit Sharing</option>
+          </select>
+          <span class="field-hint">Pos-pos pada Laporan Posisi Keuangan (Neraca)</span>
+        </div>
+
+        <div class="form-group">
+          <label>Cakupan Data <span class="req">*</span></label>
+          <select id="cakupanData" required onchange="onCakupanChange()">
+            <option value="">— Pilih Cakupan Data —</option>
+            <option>Individu</option>
+            <option>Konsolidasi</option>
+            <option>Kantor Pusat</option>
+            <option>Kantor Cabang</option>
+          </select>
+          <span class="field-hint">Cakupan informasi "Laporan Posisi Keuangan"</span>
+          <span class="field-hint" id="hintKonsolidasi" style="display:none;color:#dc2626;font-weight:600">⚠ Konsolidasi: field Rupiah tidak dapat diinput</span>
+        </div>
+
+        <div class="form-group">
+          <label>Periode Laporan <span class="req">*</span></label>
+          <input type="text" id="periode" placeholder="YYYY-MM" pattern="\d{4}-\d{2}" required>
+          <span class="field-hint">Format periode laporan: YYYY-MM</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA MONETER -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-header-title">Data Moneter — Bank Pelapor Individu</span>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Rupiah</label>
+          <div class="input-prefix-wrap">
+            <span class="prefix">Rp</span>
+            <input type="number" id="bankRupiah" min="0" oninput="onMoneterChange()">
+          </div>
+          <span class="field-hint">Jumlah pos dalam valuta Rupiah untuk Bank Pelapor secara individu</span>
+        </div>
+
+        <div class="form-group">
+          <label>Jumlah</label>
+          <div class="input-prefix-wrap">
+            <span class="prefix">Rp</span>
+            <input type="number" id="bankJumlah" class="readonly-input" readonly>
+          </div>
+          <span class="field-hint">Total Rupiah (otomatis terisi)</span>
+        </div>
+
+      </div>
+
+      <!-- PANEL VALIDASI -->
+      <div class="validasi-panel" id="validasiPanel">
+        <div class="validasi-header">
+          <div class="validasi-icon">
+            <svg id="validasiIconSvg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <div style="flex:1">
+            <div class="validasi-title" id="validasiTitle">Validasi Antar Informasi</div>
+            <div style="font-size:11px;color:#78350f;margin-top:2px" id="validasiSubtitle">Wajib diverifikasi sebelum menyimpan</div>
+          </div>
+          <div id="validasiStatusBadge"></div>
+        </div>
+
+        <div class="validasi-body">
+          <div class="validasi-rule-text" id="validasiRuleText">Memuat aturan validasi...</div>
+
+          <div class="validasi-grid">
+            <div class="validasi-box">
+              <div class="vbox-label">Nilai Neraca (Bank Jumlah)</div>
+              <div class="vbox-value" id="vboxNeraca">—</div>
+              <div style="font-size:10.5px;color:var(--text-muted);margin-top:3px">Rupiah yang diinput</div>
+            </div>
+            <div class="validasi-box">
+              <div class="vbox-label">Referensi</div>
+              <div class="vbox-value" id="vboxReferensi">—</div>
+              <div style="font-size:10.5px;color:var(--text-muted);margin-top:3px" id="vboxRefHint">—</div>
+            </div>
+            <div class="validasi-box">
+              <div class="vbox-label">Selisih</div>
+              <div class="vbox-value" id="vboxSelisih">—</div>
+              <div style="font-size:10.5px;color:var(--text-muted);margin-top:3px">Harus = 0 agar valid</div>
+            </div>
+          </div>
+
+          <!-- AREA REFERENSI PENEMPATAN BI -->
+          <div class="penempatan-bi-area" id="penempatanBIArea" style="display:none">
+            <div class="pbi-area-title">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+              Data Referensi dari Form Penempatan pada Bank Indonesia
+              <button type="button" class="pbi-refresh-btn" onclick="refreshPenempatanBIData()">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+                </svg>
+                Refresh
+              </button>
+            </div>
+            <div class="pbi-info-grid">
+              <div class="pbi-info-box">
+                <div class="vbox-label">Jumlah Data</div>
+                <div class="pbi-info-val" id="pbiInfoCount">—</div>
+              </div>
+              <div class="pbi-info-box">
+                <div class="vbox-label">Total Jumlah (Rp)</div>
+                <div class="pbi-info-val" id="pbiInfoTotal">—</div>
+              </div>
+              <div class="pbi-info-box">
+                <div class="vbox-label">Terakhir Diperbarui</div>
+                <div class="pbi-info-val" id="pbiInfoUpdated" style="font-size:11px">—</div>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted)">
+              Data diambil otomatis dari Form <strong>Penempatan pada Bank Indonesia</strong> yang tersimpan di browser ini. Pastikan form tersebut sudah dibuka dan data sudah disimpan, lalu klik <strong>Refresh</strong>.
+            </div>
+          </div>
+
+          <!-- AREA IMPORT DATA TABUNGAN -->
+          <div class="tabungan-import-area" id="tabunganImportArea" style="display:none">
+            <div class="tabungan-import-title">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Muat Data Tabungan sebagai Referensi Validasi
+            </div>
+            <div class="tabungan-load-row">
+              <label>Unggah CSV Tabungan:</label>
+              <input type="file" id="tabunganCsvFile" accept=".csv" style="height:32px;font-size:12px;padding:4px 8px;flex:1;min-width:200px" onchange="loadTabunganCSV(event)">
+              <button type="button" class="btn-sm btn-edit" onclick="clearTabunganData()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
+                Reset
+              </button>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:6px">
+              Gunakan template CSV dari halaman Tabungan. Kolom yang dibaca: <em>Jenis Akad (kolom 6), Metode Bagi Hasil (kolom 11), Periode Laporan (kolom 14), Jumlah Bulan Laporan (kolom 22).</em>
+            </div>
+            <div id="refTableContainer" style="display:none"></div>
+            <div id="tabunganDataInfo" style="font-size:12px;color:var(--text-muted);margin-top:8px"></div>
+          </div>
+
+        </div>
+      </div>
+      <!-- END VALIDASI PANEL -->
+
+    </div>
+  </div>
+
+  <!-- ACTION -->
+  <div class="card">
+    <div class="form-footer">
+      <button type="button" class="btn btn-outline" onclick="handleReset()">Reset</button>
+      <button type="button" class="btn btn-save" onclick="handleSimpan()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Simpan
+      </button>
+      <button type="button" class="btn" style="background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8;" onclick="handleValidasi()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Validasi
+      </button>
+      <button type="submit" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Generate
+      </button>
+    </div>
+  </div>
+
+</form>
+
+<!-- TABEL PENAMPUNGAN -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-header-title">Data Tersimpan — Neraca</span>
+    <div class="card-header-right">
+      <span class="tbl-counter" id="tblCounter">0 baris</span>
+      <button type="button" class="btn-sm btn-import" onclick="openImportModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Import
+      </button>
+      <button type="button" class="btn-sm btn-del" onclick="clearAllData()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
+        Hapus Semua
+      </button>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <table class="data-tbl">
+      <thead>
+        <tr>
+          <th style="width:44px">No</th>
+          <th>Pos Neraca</th>
+          <th>Cakupan Data</th>
+          <th>Periode</th>
+          <th class="num">Rupiah (Rp)</th>
+          <th class="num">Jumlah (Rp)</th>
+          <th style="min-width:160px;text-align:center">Validasi</th>
+          <th style="width:110px;text-align:center">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="tblBody">
+        <tr>
+          <td colspan="8">
+            <div class="tbl-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+              <span>Belum ada data. Isi form di atas lalu klik <strong>Simpan</strong>.</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot id="tblFoot" style="display:none">
+        <tr>
+          <td colspan="4">TOTAL</td>
+          <td class="num" id="totRupiah">—</td>
+          <td class="num" id="totJumlah">—</td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="importModal" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <span class="modal-header-title">Import Data Neraca</span>
+      <button class="modal-close" onclick="closeImportModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="dropzone" id="dropzone"
+           ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <input type="file" id="importFile" accept=".csv,.xlsx,.xls" onchange="handleFileSelect(event)">
+        <div class="dropzone-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="12" y2="12"/><line x1="15" y1="15" x2="12" y2="12"/></svg>
+        </div>
+        <div class="dropzone-label">Seret &amp; lepas file di sini</div>
+        <div class="dropzone-sub">atau klik untuk memilih file — CSV, XLS, XLSX</div>
+        <div class="dropzone-file-name" id="selectedFileName" style="display:none"></div>
+      </div>
+      <div class="import-note">
+        <strong>Format yang diterima:</strong> CSV (.csv), Excel (.xlsx / .xls)<br>
+        Urutan kolom: <em>Pos Neraca, Cakupan Data, Periode, Rupiah, Jumlah</em>
+      </div>
+      <a class="import-template-link" onclick="downloadTemplate()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Unduh template CSV
+      </a>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" onclick="closeImportModal()">Batal</button>
+      <button type="button" class="btn-import-modal btn" id="btnDoImport" onclick="doImport()" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Import Data
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA STORE
+// ═══════════════════════════════════════════════════════
+var dataStore = [];
+var editingId = null;
+var importFileData = null;
+var tabunganRefStore = [];
+
+var CROSSVAL_BI_KEY = 'crossval_penempatan_bi_total';
+var CROSSVAL_NERACA_KEY = 'crossval_neraca_pos_01020000';
+
+function syncNeracaToLocalStorage() {
+  var baris = dataStore.filter(function(d) { return d.posNeraca === '01.02.00.00.00.00'; });
+  var total = baris.reduce(function(s, d) { return s + (d.jumlah || 0); }, 0);
+  try {
+    localStorage.setItem(CROSSVAL_NERACA_KEY, JSON.stringify({
+      total: total, count: baris.length, updatedAt: new Date().toISOString()
+    }));
+  } catch(e) { console.warn('localStorage error:', e); }
+}
+
+// ═══════════════════════════════════════════════════════
+// ATURAN VALIDASI PER POS NERACA
+// ═══════════════════════════════════════════════════════
+var VALIDASI_RULES = {
+  '01.02.00.00.00.00': {
+    label: 'Penempatan pada Bank Indonesia',
+    ruleText: 'Nilai <strong>Bank Jumlah (Rupiah)</strong> pada Neraca harus sama dengan total <strong>Jumlah</strong> dari seluruh data yang tersimpan pada Form <strong>Penempatan pada Bank Indonesia</strong>.',
+    type: 'penempatan_bi'
+  },
+  '02.02.01.00.00.00': {
+    label: 'Tabungan Berdasarkan Prinsip Konvensional',
+    ruleText: 'Nilai <strong>Bank Jumlah (Rupiah)</strong> pada Neraca harus sama dengan total <strong>Jumlah Bulan Laporan</strong> pada informasi Tabungan dengan Jenis Akad = <strong>Konvensional (04)</strong>.',
+    type: 'tabungan',
+    filter: function(row) { return row.jenisAkad === '04'; }
+  },
+  '02.02.02.01.00.00': {
+    label: 'Tabungan Akad Wadiah',
+    ruleText: 'Nilai <strong>Bank Jumlah</strong> harus sama dengan total <strong>Jumlah Bulan Laporan</strong> pada informasi Tabungan dengan Jenis Akad = <strong>Wadiah Yad Dhamanah (01)</strong>.',
+    type: 'tabungan',
+    filter: function(row) { return row.jenisAkad === '01'; }
+  },
+  '02.02.02.02.00.00': {
+    label: 'Tabungan Mudharabah – Non Profit Sharing',
+    ruleText: 'Nilai <strong>Bank Jumlah</strong> harus sama dengan total <strong>Jumlah Bulan Laporan</strong> pada informasi Tabungan dengan Jenis Akad = <strong>Mudharabah (02/03)</strong> dan Metode Bagi Hasil = <strong>Non Profit Sharing (03)</strong>.',
+    type: 'tabungan',
+    filter: function(row) { return (row.jenisAkad === '02' || row.jenisAkad === '03') && row.metodeBagiHasil === '03'; }
+  },
+  '02.02.02.03.00.00': {
+    label: 'Tabungan Mudharabah – Profit Sharing',
+    ruleText: 'Nilai <strong>Bank Jumlah</strong> harus sama dengan total <strong>Jumlah Bulan Laporan</strong> pada informasi Tabungan dengan Jenis Akad = <strong>Mudharabah (02/03)</strong> dan Metode Bagi Hasil = <strong>Profit Sharing (01)</strong>.',
+    type: 'tabungan',
+    filter: function(row) { return (row.jenisAkad === '02' || row.jenisAkad === '03') && row.metodeBagiHasil === '01'; }
+  },
+  '02.03.01.00.00.00': {
+    label: 'Deposito Berdasarkan Prinsip Konvensional',
+    ruleText: 'Nilai <strong>Bank Jumlah</strong> harus sama dengan total <strong>Jumlah Bulan Laporan</strong> pada informasi Deposito dengan Jenis Akad = <strong>Konvensional (04)</strong>.',
+    type: 'tabungan',
+    filter: function(row) { return row.jenisAkad === '04'; }
+  },
+  '02.03.02.01.00.00': {
+    label: 'Deposito Mudharabah – Non Profit Sharing',
+    ruleText: 'Nilai <strong>Bank Jumlah</strong> harus sama dengan total <strong>Jumlah Bulan Laporan</strong> pada informasi Deposito dengan Jenis Akad <strong>Mudharabah (02/03)</strong> dan Metode Bagi Hasil = <strong>Non Profit Sharing (03)</strong>.',
+    type: 'tabungan',
+    filter: function(row) { return (row.jenisAkad === '02' || row.jenisAkad === '03') && row.metodeBagiHasil === '03'; }
+  },
+  '02.03.02.02.00.00': {
+    label: 'Deposito Mudharabah – Profit Sharing',
+    ruleText: 'Nilai <strong>Bank Jumlah</strong> harus sama dengan total <strong>Jumlah Bulan Laporan</strong> pada informasi Deposito dengan Jenis Akad <strong>Mudharabah (02/03)</strong> dan Metode Bagi Hasil = <strong>Profit Sharing (01)</strong>.',
+    type: 'tabungan',
+    filter: function(row) { return (row.jenisAkad === '02' || row.jenisAkad === '03') && row.metodeBagiHasil === '01'; }
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+// FORMAT ANGKA
+// ═══════════════════════════════════════════════════════
+function fmt(n) {
+  if (isNaN(n) || n === null || n === undefined) return '0';
+  return new Intl.NumberFormat('id-ID').format(Math.round(n));
+}
+
+// ═══════════════════════════════════════════════════════
+// AUTO COPY RUPIAH → JUMLAH
+// ═══════════════════════════════════════════════════════
+function onMoneterChange() {
+  var rupiah = parseFloat(document.getElementById('bankRupiah').value) || 0;
+  document.getElementById('bankJumlah').value = rupiah > 0 ? rupiah : '';
+}
+document.getElementById('bankRupiah').addEventListener('input', onMoneterChange);
+
+// ═══════════════════════════════════════════════════════
+// CAKUPAN DATA — KONSOLIDASI: LOCK RUPIAH
+// ═══════════════════════════════════════════════════════
+function onCakupanChange() {
+  var cakupan = document.getElementById('cakupanData').value;
+  var isKonsolidasi = cakupan === 'Konsolidasi';
+  var rupiahInput = document.getElementById('bankRupiah');
+  var hint = document.getElementById('hintKonsolidasi');
+  if (isKonsolidasi) {
+    rupiahInput.value = '';
+    document.getElementById('bankJumlah').value = '';
+    rupiahInput.setAttribute('readonly', true);
+    rupiahInput.classList.add('readonly-input');
+    hint.style.display = 'block';
+  } else {
+    rupiahInput.removeAttribute('readonly');
+    rupiahInput.classList.remove('readonly-input');
+    hint.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// POS NERACA CHANGE
+// ═══════════════════════════════════════════════════════
+function onPosNeracaChange() {
+  var panel = document.getElementById('validasiPanel');
+  panel.classList.remove('show','valid','invalid');
+}
+
+// ═══════════════════════════════════════════════════════
+// CROSS-VALIDASI: BACA DATA PENEMPATAN BI DARI LOCALSTORAGE
+// ═══════════════════════════════════════════════════════
+function getPenempatanBIData() {
+  try {
+    var raw = localStorage.getItem(CROSSVAL_BI_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch(e) { return null; }
+}
+
+function refreshPenempatanBIData() {
+  runValidasiPanel();
+  var pdata = getPenempatanBIData();
+  if (pdata) {
+    showToast('✓ Data Penempatan BI diperbarui: ' + pdata.count + ' data, Rp ' + fmt(pdata.total), 'success');
+  } else {
+    showToast('⚠ Belum ada data dari Form Penempatan pada BI');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// LOAD DATA TABUNGAN CSV UNTUK REFERENSI
+// ═══════════════════════════════════════════════════════
+function loadTabunganCSV(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) { parseTabunganCSV(e.target.result); };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function parseTabunganCSV(text) {
+  var lines = text.trim().split('\n');
+  var startIdx = isNaN(parseFloat(lines[0].split(',')[3])) ? 1 : 0;
+  tabunganRefStore = [];
+  for (var i = startIdx; i < lines.length; i++) {
+    var cols = lines[i].split(',').map(function(c){ return c.trim().replace(/^"|"$/g,''); });
+    if (cols.length < 22 || !cols[0]) continue;
+    tabunganRefStore.push({
+      jenisAkad: cols[5],
+      metodeBagiHasil: cols[10],
+      periodeLaporan: cols[13],
+      jumlahBulanLaporan: parseFloat(cols[21]) || 0
+    });
+  }
+  document.getElementById('tabunganDataInfo').textContent = tabunganRefStore.length + ' rekening tabungan berhasil dimuat.';
+  if (document.getElementById('validasiPanel').classList.contains('show')) { runValidasiPanel(); }
+  showToast('✓ ' + tabunganRefStore.length + ' rekening tabungan dimuat sebagai referensi', 'success');
+}
+
+function clearTabunganData() {
+  tabunganRefStore = [];
+  document.getElementById('tabunganCsvFile').value = '';
+  document.getElementById('tabunganDataInfo').textContent = '';
+  document.getElementById('refTableContainer').style.display = 'none';
+  document.getElementById('refTableContainer').innerHTML = '';
+  if (document.getElementById('validasiPanel').classList.contains('show')) { runValidasiPanel(); }
+}
+
+// ═══════════════════════════════════════════════════════
+// HITUNG REFERENSI DARI TABUNGAN CSV
+// ═══════════════════════════════════════════════════════
+function hitungReferensiTabungan(rule, periode) {
+  var filtered = tabunganRefStore.filter(function(row) {
+    var periodeMatch = !periode || !row.periodeLaporan || row.periodeLaporan === periode;
+    return periodeMatch && rule.filter(row);
+  });
+  var total = filtered.reduce(function(sum, row) { return sum + row.jumlahBulanLaporan; }, 0);
+  return { total: total, rows: filtered };
+}
+
+// ═══════════════════════════════════════════════════════
+// JALANKAN PANEL VALIDASI
+// ═══════════════════════════════════════════════════════
+function runValidasiPanel() {
+  var posCode = document.getElementById('posNeraca').value;
+  var periode = document.getElementById('periode').value;
+  var panel = document.getElementById('validasiPanel');
+
+  if (!VALIDASI_RULES[posCode]) {
+    panel.classList.remove('show','valid','invalid');
+    return;
+  }
+
+  panel.classList.add('show');
+
+  var rule = VALIDASI_RULES[posCode];
+  var bankJumlah = parseFloat(document.getElementById('bankJumlah').value) || 0;
+  var isPenempatanBI = rule.type === 'penempatan_bi';
+
+  document.getElementById('validasiTitle').textContent = 'Validasi: ' + rule.label;
+  document.getElementById('validasiRuleText').innerHTML = rule.ruleText;
+
+  var tabunganArea = document.getElementById('tabunganImportArea');
+  var penempatanArea = document.getElementById('penempatanBIArea');
+  tabunganArea.style.display = isPenempatanBI ? 'none' : 'block';
+  penempatanArea.style.display = isPenempatanBI ? 'block' : 'none';
+
+  document.getElementById('vboxRefHint').textContent = isPenempatanBI
+    ? 'Total Jumlah dari Form Penempatan pada BI'
+    : 'Jumlah Bulan Laporan (filter sesuai akad)';
+
+  var refTotal = null;
+  var hasRef = false;
+
+  if (isPenempatanBI) {
+    var pdata = getPenempatanBIData();
+    if (pdata !== null) {
+      refTotal = pdata.total; hasRef = true;
+      document.getElementById('pbiInfoCount').textContent = pdata.count + ' data';
+      document.getElementById('pbiInfoTotal').textContent = 'Rp ' + fmt(pdata.total);
+      document.getElementById('pbiInfoUpdated').textContent = pdata.updatedAt ? new Date(pdata.updatedAt).toLocaleString('id-ID') : '—';
+    } else {
+      document.getElementById('pbiInfoCount').textContent = '— (belum ada)';
+      document.getElementById('pbiInfoTotal').textContent = '—';
+      document.getElementById('pbiInfoUpdated').textContent = '—';
+    }
+  } else {
+    var refResult = hitungReferensiTabungan(rule, periode);
+    if (tabunganRefStore.length > 0) { refTotal = refResult.total; hasRef = true; }
+    var refContainer = document.getElementById('refTableContainer');
+    var refRows = refResult ? refResult.rows : [];
+    if (refRows.length > 0) {
+      refContainer.style.display = 'block';
+      var html = '<table class="tbl-ref" style="margin-top:10px"><thead><tr>';
+      html += '<th>Jenis Akad</th><th>Metode Bagi Hasil</th><th>Periode</th><th class="num">Jml Bulan Laporan (Rp)</th>';
+      html += '</tr></thead><tbody>';
+      refRows.forEach(function(r) {
+        var akadLabel = {'01':'Wadiah (01)','02':'Mudharabah Mutlaqah (02)','03':'Mudharabah Muqayyadah (03)','04':'Konvensional (04)'}[r.jenisAkad] || r.jenisAkad;
+        var metodLabel = {'01':'Profit Sharing (01)','02':'Revenue Sharing (02)','03':'Non Profit Sharing (03)','':'—'}[r.metodeBagiHasil] || r.metodeBagiHasil || '—';
+        html += '<tr><td>' + akadLabel + '</td><td>' + metodLabel + '</td><td>' + (r.periodeLaporan||'—') + '</td><td class="num">' + fmt(r.jumlahBulanLaporan) + '</td></tr>';
+      });
+      html += '</tbody><tfoot><tr><td colspan="3"><strong>TOTAL REFERENSI</strong></td><td class="num">' + fmt(refTotal) + '</td></tr></tfoot></table>';
+      refContainer.innerHTML = html;
+    } else {
+      refContainer.style.display = 'none';
+      refContainer.innerHTML = '';
+    }
+  }
+
+  document.getElementById('vboxNeraca').textContent = fmt(bankJumlah);
+
+  if (hasRef) {
+    document.getElementById('vboxReferensi').textContent = fmt(refTotal);
+    var selisih = bankJumlah - refTotal;
+    document.getElementById('vboxSelisih').textContent = (selisih >= 0 ? '' : '-') + fmt(Math.abs(selisih));
+    if (selisih === 0) {
+      panel.classList.remove('invalid'); panel.classList.add('valid');
+      document.getElementById('vboxNeraca').className = 'vbox-value ok';
+      document.getElementById('vboxReferensi').className = 'vbox-value ok';
+      document.getElementById('vboxSelisih').className = 'vbox-value ok';
+      document.getElementById('validasiSubtitle').textContent = isPenempatanBI ? 'Nilai Neraca balance dengan data Penempatan pada Bank Indonesia' : 'Nilai Neraca sesuai dengan data Tabungan';
+      document.getElementById('validasiStatusBadge').innerHTML = '<span class="validasi-status-badge ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Valid / Balance</span>';
+      setValidasiIcon('check');
+    } else {
+      panel.classList.remove('valid'); panel.classList.add('invalid');
+      document.getElementById('vboxNeraca').className = 'vbox-value err';
+      document.getElementById('vboxReferensi').className = 'vbox-value';
+      document.getElementById('vboxSelisih').className = 'vbox-value err';
+      document.getElementById('validasiSubtitle').textContent = isPenempatanBI ? 'Jumlah antara Form Neraca dan Penempatan BI tidak balance' : 'Terdapat selisih — periksa data sebelum menyimpan';
+      document.getElementById('validasiStatusBadge').innerHTML = '<span class="validasi-status-badge err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Tidak Balance</span>';
+      setValidasiIcon('x');
+    }
+  } else {
+    document.getElementById('vboxReferensi').textContent = isPenempatanBI ? 'Belum ada data BI' : 'Belum dimuat';
+    document.getElementById('vboxSelisih').textContent = '—';
+    document.getElementById('vboxNeraca').className = 'vbox-value';
+    document.getElementById('vboxReferensi').className = 'vbox-value';
+    document.getElementById('vboxSelisih').className = 'vbox-value';
+    panel.classList.remove('valid','invalid');
+    document.getElementById('validasiSubtitle').textContent = isPenempatanBI ? 'Buka Form Penempatan pada BI, simpan data, lalu klik Refresh di atas' : 'Muat CSV Tabungan di bawah untuk menghitung referensi otomatis';
+    document.getElementById('validasiStatusBadge').innerHTML = '<span class="validasi-status-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Menunggu Data</span>';
+    setValidasiIcon('info');
+  }
+
+  return hasRef ? { valid: (bankJumlah - refTotal) === 0, isPenempatanBI: isPenempatanBI } : null;
+}
+
+function setValidasiIcon(type) {
+  var svgEl = document.getElementById('validasiIconSvg');
+  if (type === 'check') {
+    svgEl.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+  } else if (type === 'x') {
+    svgEl.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+  } else {
+    svgEl.innerHTML = '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// CEK VALIDASI — untuk update status baris di tabel
+// ═══════════════════════════════════════════════════════
+function cekValidasiUntukBaris(row) {
+  var rule = VALIDASI_RULES[row.posNeraca];
+  if (!rule) return 'N/A';
+  if (rule.type === 'penempatan_bi') {
+    var pdata = getPenempatanBIData();
+    if (!pdata) return 'Belum Dicek (BI)';
+    return (row.jumlah - pdata.total) === 0 ? 'Balance' : 'Tidak Balance';
+  } else {
+    if (tabunganRefStore.length === 0) return 'Belum Dicek';
+    var filtered = tabunganRefStore.filter(function(r) {
+      var pm = !row.periode || !r.periodeLaporan || r.periodeLaporan === row.periode;
+      return pm && rule.filter(r);
+    });
+    var refTotal = filtered.reduce(function(s, r) { return s + r.jumlahBulanLaporan; }, 0);
+    return (row.jumlah - refTotal) === 0 ? 'Valid' : 'Tidak Valid';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
+function showToast(message, type) {
+  var toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(function() { toast.className = 'toast'; }, 3500);
+}
+
+// ═══════════════════════════════════════════════════════
+// VALIDASI FORM (field wajib)
+// ═══════════════════════════════════════════════════════
+function validateForm() {
+  var valid = true;
+  document.getElementById('mainForm').querySelectorAll('[required]').forEach(function(el) {
+    el.style.borderColor = '';
+    el.style.boxShadow = '';
+    if (!el.value.trim()) {
+      el.style.borderColor = '#dc2626';
+      el.style.boxShadow = '0 0 0 3px rgba(220,38,38,.12)';
+      valid = false;
+    }
+  });
+  return valid;
+}
+
+// ═══════════════════════════════════════════════════════
+// SIMPAN
+// ═══════════════════════════════════════════════════════
+function handleSimpan() {
+  if (!validateForm()) {
+    showToast('⚠ Mohon lengkapi field wajib');
+    return;
+  }
+  var rupiah = parseFloat(document.getElementById('bankRupiah').value) || 0;
+  var jumlah = parseFloat(document.getElementById('bankJumlah').value) || 0;
+  var row = {
+    id: editingId !== null ? editingId : Date.now(),
+    posNeraca:      document.getElementById('posNeraca').value,
+    cakupanData:    document.getElementById('cakupanData').value,
+    periode:        document.getElementById('periode').value,
+    rupiah:         rupiah,
+    jumlah:         jumlah,
+    validasiStatus: ''
+  };
+  if (editingId !== null) {
+    var idx = dataStore.findIndex(function(d) { return d.id === editingId; });
+    if (idx > -1) dataStore[idx] = row;
+    showToast('✏ Data berhasil diperbarui', 'success');
+  } else {
+    dataStore.push(row);
+    showToast('✓ Data berhasil disimpan', 'success');
+  }
+  editingId = null;
+  renderTable();
+  syncNeracaToLocalStorage();
+  resetForm();
+}
+
+// ═══════════════════════════════════════════════════════
+// GENERATE — ekspor ke TXT dengan pemisah "|"
+// ═══════════════════════════════════════════════════════
+function handleGenerate(e) {
+  e.preventDefault();
+
+  if (dataStore.length === 0) {
+    showToast('⚠ Belum ada data. Simpan minimal 1 baris terlebih dahulu.');
+    return;
+  }
+
+  var invalidRows = dataStore.filter(function(d) {
+    return d.validasiStatus === 'Tidak Valid' || d.validasiStatus === 'Tidak Balance';
+  });
+  if (invalidRows.length > 0) {
+    var lanjut = confirm(
+      'Terdapat ' + invalidRows.length + ' baris dengan status validasi bermasalah.\n' +
+      'Apakah Anda yakin ingin melanjutkan Generate?'
+    );
+    if (!lanjut) return;
+  }
+
+  // ── Bangun konten TXT dengan pemisah "|" ──
+  var lines = [];
+
+  // Header row
+  lines.push('Pos Neraca|Cakupan Data|Periode|Rupiah|Jumlah|Validasi');
+
+  // Data rows
+  dataStore.forEach(function(row) {
+    var s = row.validasiStatus;
+    var validasiLabel;
+    if (!s) {
+      validasiLabel = '-';
+    } else if (s === 'Valid' || s === 'Balance') {
+      validasiLabel = (row.posNeraca === '01.02.00.00.00.00') ? 'Balance' : 'Valid';
+    } else if (s === 'Tidak Balance') {
+      validasiLabel = 'Tidak Balance';
+    } else if (s === 'Tidak Valid') {
+      validasiLabel = 'Tidak Valid';
+    } else if (s === 'Belum Dicek' || s === 'Belum Dicek (BI)') {
+      validasiLabel = 'Belum Dicek';
+    } else if (s === 'N/A') {
+      validasiLabel = 'N/A';
+    } else {
+      validasiLabel = s;
+    }
+
+    lines.push([
+      row.posNeraca,
+      row.cakupanData,
+      row.periode || '',
+      Math.round(row.rupiah),
+      Math.round(row.jumlah),
+      validasiLabel
+    ].join('|'));
+  });
+
+  var content = lines.join('\n');
+
+  // Nama file: neraca_YYYY-MM.txt (pakai periode baris pertama, atau timestamp)
+  var periodeLabel = (dataStore[0] && dataStore[0].periode) ? dataStore[0].periode : new Date().toISOString().slice(0, 7);
+  var filename = 'neraca_' + periodeLabel + '.txt';
+
+  // Trigger download
+  var blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast('⚡ Generate berhasil! File ' + filename + ' diunduh (' + dataStore.length + ' baris).', 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+// TOMBOL VALIDASI
+// ═══════════════════════════════════════════════════════
+function handleValidasi() {
+  var posCode = document.getElementById('posNeraca').value;
+  if (!posCode) {
+    showToast('⚠ Pilih Pos Neraca terlebih dahulu');
+    return;
+  }
+  if (!VALIDASI_RULES[posCode]) {
+    showToast('ℹ Pos Neraca ini tidak memerlukan validasi antar informasi');
+    return;
+  }
+  runValidasiPanel();
+  var updated = 0;
+  dataStore.forEach(function(row) {
+    if (row.posNeraca === posCode) {
+      row.validasiStatus = cekValidasiUntukBaris(row);
+      updated++;
+    }
+  });
+  renderTable();
+  if (updated > 0) {
+    var panel = document.getElementById('validasiPanel');
+    if (panel.classList.contains('show')) {
+      panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    showToast('✓ Validasi dijalankan untuk ' + updated + ' baris', 'success');
+  } else {
+    showToast('ℹ Belum ada baris tersimpan untuk pos ini');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// EDIT ROW
+// ═══════════════════════════════════════════════════════
+function editRow(id) {
+  var row = dataStore.find(function(d) { return d.id === id; });
+  if (!row) return;
+  editingId = id;
+  document.getElementById('posNeraca').value   = row.posNeraca;
+  document.getElementById('cakupanData').value = row.cakupanData;
+  document.getElementById('periode').value     = row.periode;
+  document.getElementById('bankRupiah').value  = row.rupiah;
+  document.getElementById('bankJumlah').value  = row.jumlah;
+  onCakupanChange();
+  document.getElementById('validasiPanel').classList.remove('show','valid','invalid');
+  renderTable();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast('✏ Mode edit aktif — ubah data lalu klik Simpan');
+}
+
+// ═══════════════════════════════════════════════════════
+// DELETE ROW
+// ═══════════════════════════════════════════════════════
+function deleteRow(id) {
+  if (!confirm('Hapus baris ini?')) return;
+  dataStore = dataStore.filter(function(d) { return d.id !== id; });
+  if (editingId === id) { editingId = null; resetForm(); }
+  renderTable();
+  syncNeracaToLocalStorage();
+  showToast('🗑 Baris dihapus');
+}
+
+function clearAllData() {
+  if (dataStore.length === 0) return;
+  if (!confirm('Hapus semua ' + dataStore.length + ' baris data?')) return;
+  dataStore = []; editingId = null;
+  renderTable();
+  syncNeracaToLocalStorage();
+  showToast('🗑 Semua data dihapus');
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER TABLE
+// ═══════════════════════════════════════════════════════
+function renderTable() {
+  var tbody = document.getElementById('tblBody');
+  var tfoot = document.getElementById('tblFoot');
+  var counter = document.getElementById('tblCounter');
+
+  counter.textContent = dataStore.length + ' baris';
+
+  if (dataStore.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="tbl-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg><span>Belum ada data. Isi form di atas lalu klik <strong>Simpan</strong>.</span></div></td></tr>';
+    tfoot.style.display = 'none';
+    return;
+  }
+
+  var totRupiah = 0, totJumlah = 0;
+  var html = '';
+
+  dataStore.forEach(function(row, i) {
+    totRupiah += row.rupiah;
+    totJumlah += row.jumlah;
+    var isEditing = editingId === row.id;
+    var isPenempatanBI = row.posNeraca === '01.02.00.00.00.00';
+    var vBadge = '';
+    var s = row.validasiStatus;
+    if (!s) {
+      vBadge = '<span class="vbadge badge-empty" style="background:#f1f5f9;color:#94a3b8;font-size:11px">—</span>';
+    } else if (s === 'Valid' || s === 'Balance') {
+      vBadge = '<span class="vbadge badge-ok">✓ ' + (isPenempatanBI ? 'Balance' : 'Valid') + '</span>';
+    } else if (s === 'Tidak Balance') {
+      vBadge = '<div class="badge-bi-invalid"><span class="bi-badge-main">⚠ Tidak Balance</span><span class="bi-badge-sub">Jumlah antara Form Neraca dan<br>Penempatan BI tidak balance</span></div>';
+    } else if (s === 'Tidak Valid') {
+      vBadge = '<span class="vbadge badge-err">✗ Invalid</span>';
+    } else if (s === 'Belum Dicek' || s === 'Belum Dicek (BI)') {
+      vBadge = '<span class="vbadge badge-warn">? ' + (isPenempatanBI ? 'Cek BI' : 'Cek') + '</span>';
+    } else if (s === 'N/A') {
+      vBadge = '<span class="vbadge" style="background:#f1f5f9;color:#64748b">N/A</span>';
+    }
+
+    html += '<tr class="' + (isEditing ? 'editing-row' : '') + '">';
+    html += '<td><span class="row-no">' + (i + 1) + '</span></td>';
+    html += '<td style="font-size:11.5px;font-weight:500;max-width:200px">' + row.posNeraca + '</td>';
+    html += '<td><span class="vbadge">' + row.cakupanData + '</span></td>';
+    html += '<td style="font-size:12px;color:var(--text-muted)">' + (row.periode || '—') + '</td>';
+    html += '<td class="num">' + fmt(row.rupiah) + '</td>';
+    html += '<td class="num" style="color:var(--teal);font-weight:600">' + fmt(row.jumlah) + '</td>';
+    html += '<td style="text-align:center">' + vBadge + '</td>';
+    html += '<td style="text-align:center;white-space:nowrap">';
+    html += '<button type="button" class="btn-sm btn-edit" onclick="editRow(' + row.id + ')">';
+    html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button> ';
+    html += '<button type="button" class="btn-sm btn-del" onclick="deleteRow(' + row.id + ')">';
+    html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>Hapus</button>';
+    html += '</td></tr>';
+  });
+
+  tbody.innerHTML = html;
+  document.getElementById('totRupiah').textContent = fmt(totRupiah);
+  document.getElementById('totJumlah').textContent = fmt(totJumlah);
+  tfoot.style.display = '';
+}
+
+// ═══════════════════════════════════════════════════════
+// RESET FORM
+// ═══════════════════════════════════════════════════════
+function resetForm() {
+  document.getElementById('mainForm').reset();
+  document.querySelectorAll('[style*="border-color"]').forEach(function(el) {
+    el.style.borderColor = '';
+    el.style.boxShadow = '';
+  });
+  document.getElementById('bankJumlah').value = '';
+  editingId = null;
+  document.getElementById('validasiPanel').classList.remove('show','valid','invalid');
+  var rupiahInput = document.getElementById('bankRupiah');
+  rupiahInput.removeAttribute('readonly');
+  rupiahInput.classList.remove('readonly-input');
+  document.getElementById('hintKonsolidasi').style.display = 'none';
+  renderTable();
+}
+
+function handleReset() {
+  if (!confirm('Reset form? Data yang belum disimpan ke tabel akan hilang.')) return;
+  resetForm();
+  showToast('Form direset');
+}
+
+// ═══════════════════════════════════════════════════════
+// IMPORT MODAL (Neraca)
+// ═══════════════════════════════════════════════════════
+function openImportModal() {
+  importFileData = null;
+  document.getElementById('importFile').value = '';
+  document.getElementById('selectedFileName').style.display = 'none';
+  document.getElementById('btnDoImport').disabled = true;
+  document.getElementById('importModal').classList.add('open');
+}
+function closeImportModal() { document.getElementById('importModal').classList.remove('open'); }
+function handleOverlayClick(e) { if (e.target === document.getElementById('importModal')) closeImportModal(); }
+function handleDragOver(e) { e.preventDefault(); document.getElementById('dropzone').classList.add('drag-over'); }
+function handleDragLeave() { document.getElementById('dropzone').classList.remove('drag-over'); }
+function handleDrop(e) { e.preventDefault(); document.getElementById('dropzone').classList.remove('drag-over'); if (e.dataTransfer.files[0]) processSelectedFile(e.dataTransfer.files[0]); }
+function handleFileSelect(e) { if (e.target.files[0]) processSelectedFile(e.target.files[0]); }
+
+function processSelectedFile(file) {
+  var ext = file.name.split('.').pop().toLowerCase();
+  if (!['csv','xls','xlsx'].includes(ext)) { showToast('⚠ Format file tidak didukung. Gunakan CSV atau Excel.'); return; }
+  importFileData = file;
+  var nameEl = document.getElementById('selectedFileName');
+  nameEl.textContent = '📄 ' + file.name;
+  nameEl.style.display = 'inline-block';
+  document.getElementById('btnDoImport').disabled = false;
+}
+
+function doImport() {
+  if (!importFileData) return;
+  var ext = importFileData.name.split('.').pop().toLowerCase();
+  if (ext !== 'csv') { showToast('⚠ Import Excel memerlukan library tambahan. Gunakan format CSV.'); closeImportModal(); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) { parseCSVAndImport(e.target.result); };
+  reader.readAsText(importFileData, 'UTF-8');
+}
+
+function parseCSVAndImport(text) {
+  var lines = text.trim().split('\n');
+  var startIdx = isNaN(parseFloat(lines[0].split(',')[3])) ? 1 : 0;
+  var added = 0, skipped = 0;
+  for (var i = startIdx; i < lines.length; i++) {
+    var cols = lines[i].split(',').map(function(c){ return c.trim().replace(/^"|"$/g,''); });
+    if (cols.length < 3) { skipped++; continue; }
+    var posNeraca   = cols[0];
+    var cakupanData = cols[1];
+    var periode     = cols[2];
+    var rupiah      = parseFloat(cols[3]) || 0;
+    var jumlah      = parseFloat(cols[4]) || rupiah;
+    if (!posNeraca || !cakupanData || !periode) { skipped++; continue; }
+    dataStore.push({
+      id: Date.now() + i,
+      posNeraca: posNeraca, cakupanData: cakupanData, periode: periode,
+      rupiah: rupiah, jumlah: jumlah,
+      validasiStatus: ''
+    });
+    added++;
+  }
+  renderTable();
+  closeImportModal();
+  if (added > 0) {
+    showToast('✓ Import berhasil: ' + added + ' baris' + (skipped > 0 ? ', ' + skipped + ' dilewati' : ''), 'success');
+  } else {
+    showToast('⚠ Tidak ada baris valid. Periksa format file.');
+  }
+}
+
+function downloadTemplate() {
+  var header = 'Pos Neraca,Cakupan Data,Periode,Rupiah,Jumlah';
+  var sample = '02.02.01.00.00.00,Individu,2025-12,5000000,5000000';
+  var blob = new Blob([header+'\n'+sample], {type:'text/csv;charset=utf-8;'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'template_neraca.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Initial render
+renderTable();
+</script>
+</body>
+</html>
